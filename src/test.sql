@@ -1,3 +1,71 @@
+create database rent_info;
+
+create table if not exists addresses(
+                                        id serial primary key,
+                                        city varchar,
+                                        region varchar,
+                                        street varchar
+);
+
+create type gender as enum('Male', 'Female');
+
+create type family_status as enum('Single', 'Married', 'Divorced', 'Widow', 'Separated', 'Other');
+
+create table if not exists customers (
+                                         id serial primary key ,
+                                         first_name varchar,
+                                         last_name varchar,
+                                         email varchar,
+                                         date_of_birth date,
+                                         gender gender,
+                                         nationality varchar,
+                                         family_status family_status
+);
+
+create type house_type as enum('House', 'Apartment');
+
+
+create table if not exists agencies(
+                                       id serial primary key,
+                                       agency_name varchar,
+                                       phone_number varchar,
+                                       address_id int references addresses(id)
+    );
+
+create table if not exists owners(
+                                     id serial primary key ,
+                                     first_name varchar,
+                                     last_name varchar,
+                                     email varchar,
+                                     date_of_birth date,
+                                     gender gender
+);
+
+
+create table if not exists houses(
+                                     id serial primary key,
+                                     house_type house_type,
+                                     price numeric,
+                                     rating float,
+                                     description text,
+                                     room int,
+                                     furniture boolean,
+                                     address_id int references addresses(id),
+    owner_id int references owners(id)
+    );
+
+
+create table if not exists rent_info(
+                                        owner_id int references owners(id),
+    customer_id int references customers(id),
+    agency_id int references agencies(id),
+    house_id int references houses(id)
+    );
+
+
+--DDL----
+
+alter table agencies alter column agency_name set not null ;
 alter table  agencies add constraint phone_number_check check ( phone_number like '+996%' );
 
 alter table owners add constraint email_unique unique(email);
